@@ -1,0 +1,22 @@
+name: Track PR changes in slack
+on:
+  pull_request:
+    types: [opened, closed, synchronize, reopened, edited, labeled, unlabeled, assigned, unassigned]
+
+jobs:
+  track:
+    name: send to slack webhook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post PR Info to Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "pr_number": "${{ github.event.pull_request.number }}",
+            "pr_title": "${{ github.event.pull_request.title }}",
+            "pr_state": "${{ github.event.pull_request.state }}",
+            "pr_author": "${{ github.event.pull_request.user.login }}",
+            "pr_labels": ${{ toJson(github.event.pull_request.labels) }},
+            "pr_reviewers": ${{ toJson(github.event.pull_request.requested_reviewers) }},
+            "repo": "${{ github.repository }}",
+            "priority": "medium"
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
