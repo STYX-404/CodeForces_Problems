@@ -29,8 +29,8 @@ jobs:
         #   LABELS_JSON: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
           labels_json='${{ toJson(github.event.pull_request.labels) }}'
-          pr_priority=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
-          pr_severity=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
+          pr_priority=$(echo "$labels_json" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
+          pr_severity=$(echo "$labels_json" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
           echo "$pr_priority"
           echo "$pr_severity"
           repo_full="${{ github.repository }}"
