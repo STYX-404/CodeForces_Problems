@@ -28,8 +28,8 @@ jobs:
         env:
           LABELS_JSON: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
-          pr_priority=$(echo "$LABELS_JSON" | tr ',' '\n' | grep -E '^P[1-4]$' | head -n1)
-          pr_severity=$(echo "$LABELS_JSON" | tr ',' '\n' | grep -E '^S[1-4]$' | head -n1)
+          pr_priority=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
+          pr_severity=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
           repo_full="${{ github.repository }}"
           repo_name="${repo_full##*/}"
           pr_number="${{ github.event.pull_request.number }}"
