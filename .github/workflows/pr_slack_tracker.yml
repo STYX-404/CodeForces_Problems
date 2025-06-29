@@ -26,7 +26,7 @@ jobs:
       - name: Prepare Slack Payload
         id: slack_payload
         run: |
-          labels_json="${{ toJson(github.event.pull_request.labels) }}"
+          labels_json='${{ toJson(github.event.pull_request.labels) }}'
           pr_priority=$(echo "$labels_json" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // "none"')
           pr_severity=$(echo "$labels_json" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // "none"')
           repo_full="${{ github.repository }}"
