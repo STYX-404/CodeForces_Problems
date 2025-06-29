@@ -31,8 +31,8 @@ jobs:
           labels_json='${{ toJson(github.event.pull_request.labels) }}'
           pr_priority=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
           pr_severity=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
-          echo '$pr_priority'
-          echo '$pr_severity'
+          echo "$pr_priority"
+          echo "$pr_severity"
           repo_full="${{ github.repository }}"
           repo_name="${repo_full##*/}"
           pr_number="${{ github.event.pull_request.number }}"
