@@ -25,10 +25,11 @@ jobs:
           echo "REVIEW_STATUS=$review_status" >> $GITHUB_ENV
       - name: Prepare Slack Payload
         id: slack_payload
+        env:
+          LABELS_JSON: ${{ toJson(github.event.pull_request.labels) }}
         run: |
-          labels_json='${{ toJson(github.event.pull_request.labels) }}'
-          pr_priority=$(echo "$labels_json" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // "none"')
-          pr_severity=$(echo "$labels_json" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // "none"')
+          pr_priority=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
+          pr_severity=$(echo "$LABELS_JSON" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
           repo_full="${{ github.repository }}"
           repo_name="${repo_full##*/}"
           pr_number="${{ github.event.pull_request.number }}"
