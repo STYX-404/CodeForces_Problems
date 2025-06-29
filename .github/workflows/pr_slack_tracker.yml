@@ -26,13 +26,12 @@ jobs:
       - name: Prepare Slack Payload
         id: slack_payload
         run: |
-          labels_json='${{ toJson(github.event.pull_request.labels) }}'
+          labels_json="${{ toJson(github.event.pull_request.labels) }}"
           pr_priority=$(echo "$labels_json" | jq -r '[.[].name | select(test("^P[1-4]$"))][0] // ""')
           pr_severity=$(echo "$labels_json" | jq -r '[.[].name | select(test("^S[1-4]$"))][0] // ""')
           repo_full="${{ github.repository }}"
           repo_name="${repo_full##*/}"
           pr_number="${{ github.event.pull_request.number }}"
-          pr_item_id="${repo_name}_${pr_number}"
           payload=$(jq -n \
             --arg pr_number "$pr_number" \
             --arg pr_title "${{ github.event.pull_request.title }}" \
@@ -45,7 +44,6 @@ jobs:
             --arg repo_name "$repo_name" \
             --arg review_status "$REVIEW_STATUS" \
             --arg pr_link "${{ github.event.pull_request.html_url }}" \
-            --arg pr_item_id "$pr_item_id" \
             '{
               pr_number: $pr_number,
               pr_title: $pr_title,
@@ -57,8 +55,7 @@ jobs:
               repo: $repo,
               repo_name: $repo_name,
               review_status: $review_status,
-              pr_link: $pr_link,
-              pr_item_id: $pr_item_id
+              pr_link: $pr_link
             }')
           echo "payload<<EOF" >> $GITHUB_ENV
           echo "$payload" >> $GITHUB_ENV
@@ -74,7 +71,6 @@ jobs:
           github.event.action == 'unlabeled' ||
           github.event.action == 'assigned' ||
           github.event.action == 'unassigned' ||
-          github.event.action == 'reopened' ||
           github.event_name == 'pull_request_review'
         run: |
           curl -X POST -H 'Content-type: application/json' --data "$payload" "${{ secrets.SLACK_UPDATE_WEBHOOK_URL }}"
