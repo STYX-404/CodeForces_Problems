@@ -17,18 +17,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-<<<<<<< Updated upstream
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "pr_number": "${{ github.event.pull_request.number }}",
-            "pr_title": "${{ github.event.pull_request.title }}",
-            "pr_state": "${{ github.event.pull_request.state }}",
-            "pr_author": "${{ github.event.pull_request.user.login }}",
-            "pr_labels": ${{ toJson(github.event.pull_request.labels) }},
-            "pr_reviewers": ${{ toJson(github.event.pull_request.requested_reviewers) }},
-            "repo": "${{ github.repository }}",
-            "priority": "Medium"
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
-=======
           pr_number=${{ github.event.pull_request.number }}
           repo=${{ github.repository }}
           reviews_json=$(gh api repos/$repo/pulls/$pr_number/reviews)
@@ -90,4 +78,3 @@ jobs:
         if: github.event.action == 'closed' && (github.event.pull_request.merged == true || github.event.pull_request.merged == false)
         run: |
           curl -X POST -H 'Content-type: application/json' --data "$payload" "${{ secrets.SLACK_DELETE_WEBHOOK_URL }}"
->>>>>>> Stashed changes
